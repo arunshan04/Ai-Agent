@@ -2,3 +2,5 @@ langchain-openai
 langgraph 
 python-dotenv 
 langchain-community 
+google
+google.generativeai

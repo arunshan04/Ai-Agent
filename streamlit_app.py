@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 
@@ -91,11 +90,13 @@ st.markdown(
 # Sidebar menu with treeview for Tracks
 if 'sidebar_menu' not in st.session_state:
     st.session_state['sidebar_menu'] = 'Tracks'
-if 'sidebar_tracks_open' not in st.session_state:
-    st.session_state['sidebar_tracks_open'] = False
 
 tracks_resp = requests.get(f"{API_URL}tracks/")
 tracks = tracks_resp.json() if tracks_resp.status_code == 200 else []
+
+# Do not open dropdown by default
+if 'sidebar_tracks_open' not in st.session_state:
+    st.session_state['sidebar_tracks_open'] = False
 
 st.sidebar.markdown('<ul class="sidebar-menu">', unsafe_allow_html=True)
 
@@ -194,40 +195,32 @@ sidebar_css = '''
 '''
 st.markdown(sidebar_css, unsafe_allow_html=True)
 
+
+
+# --- Sidebar: Custom Dropdown for Tracks (header is clickable, no duplicate button) ---
+import streamlit.components.v1 as components
 with st.sidebar:
-    st.markdown('<div class="custom-sidebar">', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-header"><span style="margin-right:0.5em;">�️</span>Tracks <span class="dropdown-arrow{}">&#9660;</span></div>'.format(' open' if st.session_state['sidebar_tracks_open'] else ''), unsafe_allow_html=True)
-    if st.button("Tracks", key="dropdown_tracks", help="Expand/collapse tracks", use_container_width=True):
+    # Remove the "Tracks" header and rename the button
+    if st.button("Tracks", key="toggle_tracks"):
         st.session_state['sidebar_tracks_open'] = not st.session_state['sidebar_tracks_open']
     if st.session_state['sidebar_tracks_open']:
-        st.markdown('<ul class="sidebar-sublist" style="margin-top:0;">', unsafe_allow_html=True)
         seen = set()
         for t in tracks:
             if t['name'] in seen:
-                continue  # Skip duplicate track names
+                continue
             seen.add(t['name'])
-            # Only show IIP once, and only as a disabled button
-            if t['name'] == 'IIP':
-                st.markdown(f'<li class="sidebar-subitem"><button class="sidebar-link" disabled>{t["name"]}</button></li>', unsafe_allow_html=True)
-                break
-            btn_class = "sidebar-link selected" if st.session_state.get('selected_track') == t['name'] else "sidebar-link"
-            if st.button(t['name'], key=f"track_{t['id']}", help=t['name'], args=None):
+            if st.button(t['name'], key=f"track_{t['id']}"):
                 st.session_state['sidebar_menu'] = 'Tracks'
                 st.session_state['selected_track'] = t['name']
-                st.session_state['sidebar_tracks_open'] = True
-            st.markdown(f'<li class="sidebar-subitem"><button class="{btn_class}" disabled>{t["name"]}</button></li>', unsafe_allow_html=True)
-        st.markdown('</ul>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+
+    if st.button("Vulnerabilities", key="menu_Vulnerabilities"):
+        st.session_state['sidebar_menu'] = 'Vulnerabilities'
+        st.session_state['sidebar_tracks_open'] = False
 
 
 
 
 
-# Vulnerabilities menu (no expander/dropdown, just button)
-vuln_btn_style = "background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%); color: white; border: none; border-radius: 12px; padding: 0.7em 2em; font-weight: bold; font-size: 1.2em; margin-bottom: 1em; min-width: 120px; min-height: 48px;"
-if st.sidebar.button("Vulnerabilities", key="menu_Vulnerabilities"):
-    st.session_state['sidebar_menu'] = 'Vulnerabilities'
-    st.session_state['sidebar_tracks_open'] = False
 
 # JS to toggle treeview (Streamlit workaround: reload page)
 import streamlit.components.v1 as components

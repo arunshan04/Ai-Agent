@@ -2,8 +2,13 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Host, CVE, HostCVE
+from .models import Host, CVE, HostCVE, Track
 from .serializers import HostSerializer, CVESerializer, HostCVESerializer
+from .track_serializers import TrackSerializer
+from rest_framework import viewsets
+class TrackViewSet(viewsets.ModelViewSet):
+    queryset = Track.objects.all()
+    serializer_class = TrackSerializer
 
 class HostViewSet(viewsets.ModelViewSet):
     queryset = Host.objects.all()

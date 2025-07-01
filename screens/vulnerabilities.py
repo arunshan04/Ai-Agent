@@ -1,17 +1,28 @@
 import streamlit as st
-import sqlite3
+import requests
 
-def show_vulnerabilities():
-    conn = sqlite3.connect('db.sqlite3')
-    cursor = conn.cursor()
-    cursor.execute("SELECT package_name, cve_id, cve_title, cve_description, score, impact, status, other_fields, updated_ts FROM package_vulnerabilities_mapping")
-    vulns = cursor.fetchall()
-    conn.close()
+def show_vulnerabilities(api_url):
+    try:
+        response = requests.get(f"{api_url}package-vulnerabilities/")
+        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+        vulns = response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"Could not fetch vulnerabilities from API: {e}")
+        return
+
     st.subheader("All Package Vulnerabilities in the System")
+
+    if not vulns:
+        st.info("No vulnerabilities found in the system.")
+        return
+
     cols = st.columns(2)
     card_colors = ["#ffecd2", "#fcb69f", "#a1c4fd", "#c2e9fb", "#fbc2eb", "#a6c1ee"]
     for idx, v in enumerate(vulns):
-        package_name, cve_id, cve_title, cve_description, score, impact, status, other_fields, updated_ts = v
+        # Access data by key from the dictionary
+        cve_id = v.get('cve_id', 'N/A')
+        cve_title = v.get('cve_title', 'N/A')
+        updated_ts = v.get('updated_ts', '')
         with cols[idx % 2]:
             st.markdown(f"""
                 <div class='vuln-card'>
@@ -22,12 +33,12 @@ def show_vulnerabilities():
                         <span style='color:#888;font-size:1em;'><i class='fa fa-clock-o'></i> {updated_ts[11:16] if updated_ts else ''}</span>
                     </div>
                     <div style='border-top:1px solid #eee;padding-top:0.5em;margin-top:0.3em;'>
-                        <div style='font-size:1.08em;margin-bottom:0.5em;'>{cve_title}</div>
-                        <p><b>Description:</b> {cve_description}</p>
-                        <p><b>Score:</b> <span class='vuln-score'>{score}</span></p>
-                        <p><b>Impact:</b> <span class='vuln-impact'>{impact}</span></p>
-                        <p><b>Status:</b> {status}</p>
-                        <p><b>Other:</b> {other_fields}</p>
+                        <div style='font-size:1.08em;margin-bottom:0.5em;'>{v.get('cve_title', 'No Title')}</div>
+                        <p><b>Description:</b> {v.get('cve_description', 'N/A')}</p>
+                        <p><b>Score:</b> <span class='vuln-score'>{v.get('score', '-')}</span></p>
+                        <p><b>Impact:</b> <span class='vuln-impact'>{v.get('impact', '-')}</span></p>
+                        <p><b>Status:</b> {v.get('status', '-')}</p>
+                        <p><b>Other:</b> {v.get('other_fields', '-')}</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)

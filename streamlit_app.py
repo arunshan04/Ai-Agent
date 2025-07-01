@@ -1,7 +1,15 @@
 import streamlit as st
 import requests
+import sys
+import os
+
+# --- Add project root to sys.path ---
+# This ensures that 'screens' can be imported regardless of the execution directory
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from screens.vulnerabilities import show_vulnerabilities
 from screens.track_view import show_track_view
+from screens.stats import show_stats
 
 API_URL = "http://localhost:8000/api/"
 
@@ -16,9 +24,11 @@ st.markdown("<h1 style='color:#185a9d; font-weight:900;'>CVE Dashboard</h1>", un
 
 # Sidebar state and data
 if 'sidebar_menu' not in st.session_state:
-    st.session_state['sidebar_menu'] = 'Tracks'
+    st.session_state['sidebar_menu'] = 'Dashboard'
 tracks_resp = requests.get(f"{API_URL}tracks/")
 tracks = tracks_resp.json() if tracks_resp.status_code == 200 else []
+hosts_resp = requests.get(f"{API_URL}hosts/")
+hosts = hosts_resp.json() if hosts_resp.status_code == 200 else []
 if 'sidebar_tracks_open' not in st.session_state:
     st.session_state['sidebar_tracks_open'] = False
 
@@ -27,8 +37,13 @@ if 'sidebar_tracks_open' not in st.session_state:
 
 # Sidebar (simple version)
 with st.sidebar:
+    if st.button("Dashboard", key="menu_Dashboard_sidebar"):
+        st.session_state['sidebar_menu'] = 'Dashboard'
+        st.session_state['sidebar_tracks_open'] = False
     if st.button("Tracks", key="toggle_tracks_sidebar"):
         st.session_state['sidebar_tracks_open'] = not st.session_state['sidebar_tracks_open']
+        if st.session_state['sidebar_tracks_open']:
+            st.session_state['sidebar_menu'] = 'Tracks'
     if st.session_state['sidebar_tracks_open']:
         seen = set()
         for t in tracks:
@@ -43,11 +58,13 @@ with st.sidebar:
         st.session_state['sidebar_tracks_open'] = False
 
 sidebar_tag = st.session_state['sidebar_menu']
-if sidebar_tag == "Tracks":
+if sidebar_tag == "Dashboard":
+    show_stats(tracks, hosts)
+elif sidebar_tag == "Tracks":
     selected_track = st.session_state.get('selected_track')
     if selected_track:
         show_track_view(selected_track, tracks)
     else:
         st.info("Select a track to view hosts and package vulnerabilities.")
 elif sidebar_tag == "Vulnerabilities":
-    show_vulnerabilities()
+    show_vulnerabilities(API_URL)

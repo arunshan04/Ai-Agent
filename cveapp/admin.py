@@ -61,19 +61,20 @@ class HostAdmin(admin.ModelAdmin):
                         rows
                     )
 
-# --- Create local table host_vulnerabilities_mapping if not exists ---
-def ensure_host_vulnerabilities_mapping_table():
+# --- Create local table package_vulnerabilities_mapping if not exists ---
+def ensure_package_vulnerabilities_mapping_table():
     table_sql = '''
-    CREATE TABLE IF NOT EXISTS host_vulnerabilities_mapping (
+    CREATE TABLE IF NOT EXISTS package_vulnerabilities_mapping (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        host_id INTEGER,
+        package_name VARCHAR(255) NOT NULL,
         cve_id VARCHAR(64),
         cve_title VARCHAR(255),
         cve_description TEXT,
         score FLOAT,
         impact VARCHAR(64),
         status VARCHAR(64),
-        other_fields TEXT
+        other_fields TEXT,
+        updated_ts DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     '''
     with connection.cursor() as cursor:
@@ -81,11 +82,9 @@ def ensure_host_vulnerabilities_mapping_table():
 
 
 # Ensure table exists at import time
-ensure_host_vulnerabilities_mapping_table()
+ensure_package_vulnerabilities_mapping_table()
 
 @admin.register(CVE)
 class CVEAdmin(admin.ModelAdmin):
     list_display = ("cve_id", "score", "impact")
     search_fields = ("cve_id", "description")
-
-

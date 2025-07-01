@@ -30,9 +30,4 @@ class CVE(models.Model):
     def __str__(self):
         return self.cve_id
 
-class HostCVE(models.Model):
-    host = models.ForeignKey(Host, on_delete=models.CASCADE)
-    cve = models.ForeignKey(CVE, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.host} - {self.cve}"

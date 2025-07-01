@@ -1,0 +1,164 @@
+/* Host Vulnerability Card Styles for Track View */
+.host-vuln-card {
+    background: #f5f7fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1em 1em 1em 1em;
+    margin-bottom: 1.2em;
+    max-width: 600px;
+}
+.host-vuln-card b {
+    color: #222;
+}
+.host-vuln-card .vuln-score {
+    color: #e17055;
+    font-weight: bold;
+}
+.host-vuln-card .vuln-impact {
+    color: #00b894;
+    font-weight: bold;
+}
+.host-vuln-card .none {
+    color: #bbb;
+}
+/* Vulnerability Card Styles */
+.vuln-card {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 1.5em 1em 1em 1em;
+    margin-bottom: 1.5em;
+}
+.vuln-title {
+    color: #185a9d;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+.vuln-score {
+    color: #e17055;
+    font-weight: bold;
+}
+.vuln-impact {
+    color: #00b894;
+    font-weight: bold;
+}
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+.main {
+    background: transparent;
+}
+.stApp {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+.sidebar .sidebar-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.css-1d391kg, .css-1v0mbdj, .css-1cpxqw2 {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 1.5em 1em 1em 1em;
+    margin-bottom: 1.5em;
+}
+.st-bb, .st-c3, .st-c6, .st-cg, .st-ch, .st-ci, .st-cj, .st-ck, .st-cl, .st-cm, .st-cn, .st-co, .st-cp, .st-cq, .st-cr, .st-cs, .st-ct, .st-cu, .st-cv, .st-cw, .st-cx, .st-cy, .st-cz {
+    color: #333;
+}
+.stButton>button {
+    background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5em 1.5em;
+    font-weight: bold;
+    margin-top: 1em;
+}
+.stSelectbox>div>div {
+    background: #fff;
+    color: #333;
+/* New Sidebar Styles - Modern Dark Navigation */
+.main-navigation {
+    color: #7b8ca7;
+    font-size: 1em;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin-bottom: 1.5em;
+    letter-spacing: 1px;
+    padding: 1.2em 0 0.5em 1.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0.7;
+}
+.sidebar-nav {
+    background: #1a1832;
+    border-radius: 0 20px 20px 0;
+    min-width: 240px;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-nav .nav-section {
+    margin-bottom: 1.2em;
+}
+.sidebar-nav .nav-link, .sidebar-nav .nav-dropdown {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 1.08em;
+    font-weight: 500;
+    padding: 1em 1.5em;
+    border-radius: 0 16px 16px 0;
+    margin-bottom: 2px;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.sidebar-nav .nav-link.selected, .sidebar-nav .nav-link:hover, .sidebar-nav .nav-dropdown.selected, .sidebar-nav .nav-dropdown:hover {
+    background: #2d254a;
+    color: #fff;
+}
+.sidebar-nav .nav-dropdown {
+    justify-content: space-between;
+    font-weight: 600;
+}
+.sidebar-nav .dropdown-arrow {
+    margin-left: 1em;
+    font-size: 1.2em;
+    transition: transform 0.2s;
+}
+.sidebar-nav .dropdown-arrow.open {
+    transform: rotate(90deg);
+}
+.sidebar-nav .nav-sublinks {
+    background: #28224a;
+    border-radius: 0 0 16px 16px;
+    margin-left: 0.5em;
+    margin-bottom: 0.5em;
+    padding-left: 0.5em;
+}
+.sidebar-nav .nav-sublink {
+    color: #bcbcbc;
+    font-size: 1em;
+    padding: 0.7em 2.5em;
+    border: none;
+    background: none;
+    border-radius: 0 12px 12px 0;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.sidebar-nav .nav-sublink.selected, .sidebar-nav .nav-sublink:hover {
+    background: #3a2d5c;
+    color: #fff;
+}
+.sidebar-nav .nav-icon {
+    margin-right: 0.9em;
+    font-size: 1.1em;
+    opacity: 0.85;
+}
+}

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Host, CVE, HostCVE
+from .models import Host, CVE
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,9 +11,4 @@ class CVESerializer(serializers.ModelSerializer):
         model = CVE
         fields = '__all__'
 
-class HostCVESerializer(serializers.ModelSerializer):
-    host = HostSerializer()
-    cve = CVESerializer()
-    class Meta:
-        model = HostCVE
-        fields = '__all__'
+

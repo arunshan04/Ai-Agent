@@ -1,7 +1,7 @@
 
 
 from django.contrib import admin
-from .models import Track, Host, CVE
+from .models import Track, Host
 
 @admin.register(Track)
 class TrackAdmin(admin.ModelAdmin):
@@ -45,21 +45,30 @@ class HostAdmin(admin.ModelAdmin):
                 file = form.cleaned_data['package_file']
                 # Read and process file
                 lines = file.read().decode('utf-8').splitlines()
-                # Skip header if present
                 if lines and (lines[0].lower().startswith('packagename') or ',' in lines[0]):
                     lines = lines[1:]
                 rows = []
                 for line in lines:
-                    parts = [p.strip() for p in line.split(',')]
-                    if len(parts) >= 2:
-                        package_name, installed_date = parts[0], parts[1]
-                        rows.append((host_id, package_name, installed_date))
-                # Insert into raw SQL table
+                    parts = [p.strip() for p in line.split('|')]
+                    if len(parts) >= 6:
+                        package_full_name,package_name,version,release,arch,installed_date = parts[0],parts[1],parts[2],parts[3],parts[4],parts[5]
+                        rows.append((host_id, package_full_name,package_name,version,release,arch,installed_date ))
+                # Insert into DB
                 with connection.cursor() as cursor:
                     cursor.executemany(
-                        'INSERT INTO host_packages (host_id, package_name, installed_date) VALUES (?, ?, ?)',
+                        'INSERT INTO host_packages (host_id, package_full_name,package_name,version,release,arch,installed_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
                         rows
                     )
+                messages.success(request, f"{len(rows)} packages uploaded successfully.")
+                return redirect(f"../../")  # Redirect back to the host list or detail
+        else:
+            form = PackageUploadForm()
+
+        context = {
+            'form': form,
+            'title': f"Upload packages for Host ID {host_id}",
+        }
+        return render(request, 'admin/upload_packages.html', context)
 
 # --- Create local table package_vulnerabilities_mapping if not exists ---
 def ensure_package_vulnerabilities_mapping_table():
@@ -79,9 +88,3 @@ def ensure_package_vulnerabilities_mapping_table():
     '''
     with connection.cursor() as cursor:
         cursor.execute(table_sql)
-
-
-@admin.register(CVE)
-class CVEAdmin(admin.ModelAdmin):
-    list_display = ("cve_id", "score", "impact")
-    search_fields = ("cve_id", "description")

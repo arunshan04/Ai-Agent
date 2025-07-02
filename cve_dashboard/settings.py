@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "cveapp.apps.CveappConfig",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # Assuming React runs on port 3000
     "http://127.0.0.1:3000",
 ]
+
+# Celery settings for database broker/result backend
+CELERY_BROKER_URL = 'django://'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

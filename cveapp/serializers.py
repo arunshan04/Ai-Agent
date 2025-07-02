@@ -1,14 +1,11 @@
 from rest_framework import serializers
-from .models import Host, CVE
-
-class HostSerializer(serializers.ModelSerializer):
+from .models import CVE, Track
+class TrackSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Host
-        fields = '__all__'
+        model = Track
+        fields = ['id', 'name', 'description']
 
 class CVESerializer(serializers.ModelSerializer):
     class Meta:
         model = CVE
-        fields = '__all__'
-
-
+        fields = ['id', 'cve_id', 'score', 'impact', 'description']

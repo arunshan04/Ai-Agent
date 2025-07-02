@@ -81,9 +81,6 @@ def ensure_package_vulnerabilities_mapping_table():
         cursor.execute(table_sql)
 
 
-# Ensure table exists at import time
-ensure_package_vulnerabilities_mapping_table()
-
 @admin.register(CVE)
 class CVEAdmin(admin.ModelAdmin):
     list_display = ("cve_id", "score", "impact")

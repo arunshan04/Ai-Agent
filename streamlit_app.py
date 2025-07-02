@@ -6,7 +6,6 @@ import os
 # --- Add project root to sys.path ---
 # This ensures that 'screens' can be imported regardless of the execution directory
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
 from screens.vulnerabilities import show_vulnerabilities
 from screens.track_view import show_track_view
 from screens.stats import show_stats

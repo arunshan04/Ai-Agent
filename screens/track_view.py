@@ -25,14 +25,14 @@ def show_track_view(selected_track, tracks):
                 <div class='host-vuln-card'>
                     <b>Host:</b> {host_name} ({os_type})<br>
                     <b>Package:</b> {package_name}<br>
-                    <b>CVE ID:</b> {cve_id or '<span class=\'none\'>None</span>'}<br>
-                    <b>Title:</b> {cve_title or '<span class=\'none\'>None</span>'}<br>
-                    <b>Description:</b> {cve_description or '<span class=\'none\'>None</span>'}<br>
+                    <b>CVE ID:</b> {cve_id or "<span class='none'>None</span>"}<br>
+                    <b>Title:</b> {cve_title or "<span class='none'>None</span>"}<br>
+                    <b>Description:</b> {cve_description or "<span class='none'>None</span>"}<br>
                     <b>Score:</b> <span class='vuln-score'>{score or '-'}</span><br>
                     <b>Impact:</b> <span class='vuln-impact'>{impact or '-'}</span><br>
                     <b>Status:</b> {status or '-'}<br>
                     <b>Other:</b> {other_fields or '-'}
                 </div>
-            """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
     else:
         st.info("No hosts/packages/vulnerabilities found for this track.")

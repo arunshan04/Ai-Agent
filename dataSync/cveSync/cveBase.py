@@ -33,7 +33,7 @@ class CVEConfig:
     # Database configs
     elasticsearch_host: str = "localhost:9200"
     elasticsearch_index: str = "cve_data"
-    sqlite_db_path: str = "/Users/ar2024/Projects/AiAgent/db.sqlite3"
+    sqlite_db_path: str = "db.sqlite3"
     
     # Sync settings
     batch_size: int = 100

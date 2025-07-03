@@ -4,6 +4,7 @@ from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -104,3 +105,21 @@ def get_track_detail(track_id: int, conn: sqlite3.Connection = Depends(get_db_co
     """, (track_id,))
     results = cursor.fetchall()
     return results
+
+@app.get("/api/cve-summary-charts/")
+def get_cve_summary_charts(conn: sqlite3.Connection = Depends(get_db_conn)):
+    cursor = conn.cursor()
+    # CVEs by severity
+    cursor.execute('SELECT severity, COUNT(*) FROM cve_summary GROUP BY severity')
+    severity_data = {row['severity']: row['COUNT(*)'] for row in cursor.fetchall()}
+    # CVEs by month (last 7 months)
+    cursor.execute('SELECT substr(published_date, 1, 7) as month, COUNT(*) FROM cve_summary GROUP BY month ORDER BY month DESC LIMIT 7')
+    month_data = cursor.fetchall()
+    # CVEs by CVSS score (rounded)
+    cursor.execute('SELECT ROUND(cvss_score), COUNT(*) FROM cve_summary GROUP BY ROUND(cvss_score) ORDER BY ROUND(cvss_score)')
+    cvss_data = cursor.fetchall()
+    return {
+        'severity': severity_data,
+        'monthly': [{'month': row['month'], 'count': row['COUNT(*)']} for row in month_data],
+        'cvss': [{'score': row['ROUND(cvss_score)'] if row['ROUND(cvss_score)'] is not None else 'Unspecified', 'count': row['COUNT(*)']} for row in cvss_data],
+    }

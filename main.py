@@ -2,7 +2,7 @@ import sqlite3
 from typing import List, Optional
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 
@@ -109,7 +109,7 @@ def get_track_detail(track_id: int, conn: sqlite3.Connection = Depends(get_db_co
 @app.get("/api/cve-summary-charts/")
 def get_cve_summary_charts(conn: sqlite3.Connection = Depends(get_db_conn)):
     cursor = conn.cursor()
-    # CVEs by severity
+    # CVEs by severity (use cve_summary, not cve_analysis)
     cursor.execute('SELECT severity, COUNT(*) FROM cve_summary GROUP BY severity')
     severity_data = {row['severity']: row['COUNT(*)'] for row in cursor.fetchall()}
     # CVEs by month (last 7 months)
@@ -123,3 +123,30 @@ def get_cve_summary_charts(conn: sqlite3.Connection = Depends(get_db_conn)):
         'monthly': [{'month': row['month'], 'count': row['COUNT(*)']} for row in month_data],
         'cvss': [{'score': row['ROUND(cvss_score)'] if row['ROUND(cvss_score)'] is not None else 'Unspecified', 'count': row['COUNT(*)']} for row in cvss_data],
     }
+
+@app.get("/api/track-analysis/")
+def get_track_analysis(track_name: Optional[str] = Query(None), conn: sqlite3.Connection = Depends(get_db_conn)):
+    """
+    Returns joined data from cve_analysis, tracks, hosts, and packages.
+    If track_name is provided, filter by that track name.
+    Excludes rows where status is 'NonVulnerable'.
+    """
+    cursor = conn.cursor()
+    sql = '''
+        SELECT ca.*, 
+               t.name AS track_name, 
+               h.name AS host_name, h.os_type AS host_os_type,
+               p.package_full_name,
+               REPLACE(TRIM(REPLACE(REPLACE(cs.description, '==>', '\n'), '\n\n', '\n')), '\n\n', '\n') as cve_description
+        FROM cve_analysis ca
+        LEFT JOIN host_packages p ON ca.package = p.package_full_name
+        LEFT JOIN cveapp_host h ON p.host_id = h.id
+        LEFT JOIN cveapp_track t ON h.track_id = t.id
+        LEFT JOIN cve_summary cs ON ca.cve_id = cs.cve_id
+        WHERE (? IS NULL OR t.name = ?)
+          AND ca.status != 'Not Vulnerable'
+    '''
+    params = [track_name, track_name]
+    cursor.execute(sql, params)
+    results = cursor.fetchall()
+    return results

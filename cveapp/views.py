@@ -44,12 +44,10 @@ class CVEListApiView(APIView):
         serializer = CVESerializer(cves, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class CVEListApiView(APIView):
-    # List all CVEs
+class CVEAnalysisApiView(APIView):
     def get(self, request, *args, **kwargs):
-        '''
-        List all the cve items
-        '''
-        cves = CVE.objects.all()
-        serializer = CVESerializer(cves, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT id, package, cve_id, status, cvss_score, cvss_vector, Severity, reasoning, impact, thought, thinking_text, updated_ts FROM cve_analysis')
+            columns = [col[0] for col in cursor.description]
+            results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return Response(results, status=status.HTTP_200_OK)
